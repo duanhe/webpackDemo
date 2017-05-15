@@ -1,9 +1,10 @@
+var webpack = require('webpack')
 module.exports = {
     devtool: 'eval-source-map',
 
     entry:  __dirname + "/app/main.js",
     output: {
-        path: __dirname + "/public",
+        path: __dirname + "/build",
         filename: "bundle.js"
     },
 
@@ -20,15 +21,26 @@ module.exports = {
             },
             {
                 test: /\.css/,
-                loader: 'css!style'//添加对样式表的处理
+                loader: 'css!style?module!postcss'//添加对样式表的处理
             }
         ]
     },
-
-    devServer: {
-        contentBase: "./public",
-        colors: true,
-        historyApiFallback: true,
-        inline: true
-    }
+    plugins: [
+        new webpack.LoaderOptionsPlugin({
+            options: {
+                postcss: [
+                    require('autoprefixer'),
+                ],
+                devServer: {
+                    contentBase: "./public",
+                    colors: true,
+                    historyApiFallback: true,
+                    inline: true,
+                    hot: true
+                }
+            }
+        }),
+        new webpack.BannerPlugin("Copyright Flying Unicorns inc."),//在这个数组中new一个就可以了
+        new webpack.HotModuleReplacementPlugin()
+    ]
 }
